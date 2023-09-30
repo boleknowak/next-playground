@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
           access_type: 'offline',
           prompt: 'consent',
           scope:
-            'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+            'openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
         },
       },
     }),
@@ -24,6 +24,8 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account }) {
       const refreshToken = account?.refresh_token;
+      const accessToken = account?.access_token;
+      const scope = account?.scope;
 
       const user = await prisma.user.findUnique({
         where: {
@@ -35,7 +37,19 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      if (refreshToken) {
+      if (refreshToken && accessToken && scope) {
+        const scopes = scope.split(' ');
+        const accountScopes = await prisma.account.findFirst({
+          where: {
+            userId: token.sub,
+            providerAccountId: account.providerAccountId,
+          },
+        });
+
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        const newScopes = [...scopes, ...accountScopes.scope?.split(' ')];
+        const uniqueScopes = [...new Set(newScopes)];
+
         await prisma.account.updateMany({
           where: {
             userId: token.sub,
@@ -43,6 +57,8 @@ export const authOptions: NextAuthOptions = {
           },
           data: {
             refresh_token: refreshToken,
+            access_token: accessToken,
+            scope: uniqueScopes.join(' '),
           },
         });
       }

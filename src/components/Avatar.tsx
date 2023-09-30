@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useEffect } from 'react';
 
 const Avatar = ({ src, alt, services, ...props }) => {
   const defaultAvatarSrc = '/images/default-avatar.png';
@@ -7,10 +6,6 @@ const Avatar = ({ src, alt, services, ...props }) => {
   const onError = (e) => {
     e.target.src = defaultAvatarSrc;
   };
-
-  useEffect(() => {
-    console.log(services);
-  }, [services]);
 
   if (services) {
     return (

@@ -1,4 +1,5 @@
 import '@/styles/globals.scss';
+import 'animate.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import { SessionProvider } from 'next-auth/react';
 import { theme } from '@/styles/theme';

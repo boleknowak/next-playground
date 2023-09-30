@@ -1,3 +1,4 @@
+import Avatar from '@/components/Avatar';
 import { Button } from '@chakra-ui/react';
 import { Account, User } from '@prisma/client';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -100,6 +101,17 @@ export default function Home() {
 
   return (
     <main>
+      <div className="mb-6 ml-2 mt-6 flex flex-row">
+        <Avatar
+          src="https://i.imgur.com/R7UTmd2.png"
+          alt="Jan Kowalski"
+          title="Jan Kowalski"
+          width={64}
+          height={64}
+          className="rounded-full"
+          services={[{ name: 'facebook' }, { name: 'google' }]}
+        />
+      </div>
       {!isAuthed && (
         <div>
           <div>Hello World!</div>

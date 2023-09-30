@@ -10,11 +10,21 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+      authorization: {
+        params: {
+          access_type: 'offline',
+          prompt: 'consent',
+          scope:
+            'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+        },
+      },
     }),
   ],
   session: { strategy: 'jwt' },
   callbacks: {
-    async jwt({ token }) {
+    async jwt({ token, account }) {
+      const refreshToken = account?.refresh_token;
+
       const user = await prisma.user.findUnique({
         where: {
           id: token.sub,
@@ -23,6 +33,18 @@ export const authOptions: NextAuthOptions = {
 
       if (!user) {
         return token;
+      }
+
+      if (refreshToken) {
+        await prisma.account.updateMany({
+          where: {
+            userId: token.sub,
+            providerAccountId: account.providerAccountId,
+          },
+          data: {
+            refresh_token: refreshToken,
+          },
+        });
       }
 
       return {

@@ -13,12 +13,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String    @map("provider_account_id")
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String?   @db.Text
+  access_token      String?   @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String?   @db.Text
   session_state     String?
   created_at        DateTime  @default(now())
   updated_at        DateTime? @updatedAt
@@ -47,7 +47,7 @@ model User {
   name          String?   @unique
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
-  image         String?
+  image         String?   @db.Text
   password      String?
   created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt

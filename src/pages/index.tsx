@@ -1,5 +1,6 @@
+import { Button } from '@chakra-ui/react';
 import { User } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 export default function Home() {
   const { data: session, status: authed } = useSession();
@@ -13,8 +14,22 @@ export default function Home() {
 
   return (
     <main>
-      <div>Hello World!</div>
-      {isAuthed && <div>Hello, {user.name}</div>}
+      {!isAuthed && (
+        <div>
+          <div>Hello World!</div>
+          <Button colorScheme="blue" onClick={() => signIn('google')}>
+            Google
+          </Button>
+        </div>
+      )}
+      {isAuthed && (
+        <div>
+          Hello, {user.name}
+          <Button colorScheme="blue" onClick={() => signOut()}>
+            Log off
+          </Button>
+        </div>
+      )}
     </main>
   );
 }
